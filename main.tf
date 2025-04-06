@@ -1,0 +1,56 @@
+module "private_ec2" {
+  source          = "./modules/ec2"
+  instances       = var.private_servers
+  private_subnets = var.private_subnets
+  public_subnets  = var.public_subnets
+  is_public       = false
+  env             = var.env
+  orgname         = var.orgname
+}
+
+module "public_ec2" {
+  source          = "./modules/ec2"
+  instances       = var.public_servers
+  private_subnets = var.private_subnets
+  public_subnets  = var.public_subnets
+  is_public       = true
+  env             = var.env
+  orgname         = var.orgname
+}
+
+module "efs" {
+  source          = "./modules/efs"
+  name            = var.efs.name
+  mount_targets   = var.efs.mount_targets
+  private_subnets = var.private_subnets
+  sg_id           = "sg-efs"  # Adjust or source dynamically as needed
+}
+
+module "crm_lb" {
+  source     = "./modules/loadbalancer"
+  lb         = var.application_servers.crm.lb
+  subnet_ids = var.private_subnets
+  vpc_id     = var.vpc_id
+  sg_id      = "sg-crm-lb"  # Adjust or source dynamically
+}
+
+module "rds" {
+  source  = "./modules/rds"
+  rds     = var.rds_server
+  vpc_id  = var.vpc_id
+  sg_id   = "sg-mysql-api"  # Adjust as needed
+}
+
+module "ssm" {
+  source         = "./modules/ssm"
+  ssm_parameters = var.ssm_parameters
+}
+
+# Backup module is only applicable for production.
+module "backup" {
+  source         = "./modules/backup"
+  count          = var.env == "PROD" ? 1 : 0
+  backup_policy  = var.backup_policy
+  # Supply resource ARNs (e.g., from EC2, RDS, etc.). For demo, this is left empty.
+  resource_arns  = []
+}
