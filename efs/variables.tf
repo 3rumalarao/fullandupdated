@@ -14,7 +14,17 @@ variable "private_subnets" {
   type = list(string)
 }
 
-variable "sg_id" {
-  description = "Security group ID for the EFS mount targets"
-  type = string
+variable "environment" {
+  description = "Environment tag"
+  type        = string
+}
+
+variable "vpc_id" {
+  description = "VPC ID"
+  type        = string
+}
+
+variable "common_tags" {
+  description = "Common tags for EFS resources"
+  type        = map(string)
 }
