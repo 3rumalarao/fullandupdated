@@ -1,24 +1,26 @@
 resource "aws_db_subnet_group" "this" {
-  name       = "${var.rds.name}-subnet-group"
-  subnet_ids = var.rds.subnets
+  name       = "${var.rds_config.name}-subnet-group"
+  subnet_ids = var.privates_subnets
 
-  tags = {
-    Name = "${var.rds.name}-subnet-group"
-  }
+  tags = merge(var.common_tags, {
+    Name = "${var.rds_config.name}-subnet-group",
+    Environment = var.environment
+  })
 }
 
 resource "aws_db_instance" "this" {
-  identifier             = var.rds.name
-  engine                 = var.rds.engine
-  instance_class         = var.rds.instance_class
-  username               = var.rds.username
-  password               = var.rds.password
-  allocated_storage      = var.rds.storage
+  identifier             = var.rds_config.name
+  engine                 = var.rds_config.engine
+  instance_class         = var.rds_config.instance_class
+  username               = var.db_username
+  password               = var.db_password
+  allocated_storage      = var.rds_config.storage
   db_subnet_group_name   = aws_db_subnet_group.this.name
-  vpc_security_group_ids = [var.sg_id]
+  vpc_security_group_ids = []  # You can attach a security group here if needed
   skip_final_snapshot    = true
 
-  tags = {
-    Name = var.rds.name
-  }
+  tags = merge(var.common_tags, {
+    Name        = var.rds_config.name,
+    Environment = var.environment
+  })
 }
