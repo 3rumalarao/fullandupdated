@@ -1,3 +1,23 @@
+# Terraform AWS Infrastructure for PHP Applications
+
+## Overview
+This Terraform project provisions AWS infrastructure using an existing VPC with private and public subnets. 
+It dynamically creates EC2 instances (private, public, and application servers), an EFS file system, load balancers, 
+an RDS instance, and SSM parameters for application settings. In the production environment, all resources are backed up (snapshots) via AWS Backup.
+
+**Naming Convention:**  
+All resources use the pattern:  
+{env}-{orgname}-{APP}-{resource-type}
+
+For example, the Metrics server’s security group is `DEV-SAP-METRICS-SG`.
+
+**Corrections Implemented:**
+- **Public Instances:**  
+  Public servers do not auto-assign a public IP. An Elastic IP is allocated and associated with each public instance.
+- **Production Backups:**  
+  A backup module creates a backup vault, plan, and selection for resources (using a 7‑day retention policy by default).
+
+## Folder Structure
 .
 ├── backend.tf
 ├── providers.tf
