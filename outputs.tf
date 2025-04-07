@@ -33,3 +33,7 @@ output "ssm_parameters" {
 output "backup_plan_id" {
   value = module.backup.backup_plan_id
 }
+
+output "sg_ids" {
+  value = module.sg.sg_ids
+}
