@@ -1,5 +1,5 @@
 aws_region = "us-east-1"
-env        = "DEV"
+env        = "DEV"        # Change to "PROD" for production
 orgname    = "SAP"
 vpc_id     = "vpc-12345678"
 
@@ -146,15 +146,16 @@ application_servers = {
   }
 }
 
-rds_server = {
+# For the new RDS module variables.
+rds_config = {
   name           = "${env}-${orgname}-MYSQL-API"
   instance_class = "db.m5.large"
   engine         = "mysql"
-  username       = "dbuser"
-  password       = "ChangeMe123"
   storage        = 500
-  subnets        = private_subnets
 }
+
+db_username = "dbuser"
+db_password = "ChangeMe123"
 
 ssm_parameters = {
   app_env = {
@@ -174,4 +175,11 @@ ssm_parameters = {
 backup_policy = {
   retention_days      = 7
   resource_tag_filter = "PROD-${orgname}"
+}
+
+# Common tags for resources.
+common_tags = {
+  Environment = var.env
+  Org         = var.orgname
+  Owner       = "InfraTeam"
 }
