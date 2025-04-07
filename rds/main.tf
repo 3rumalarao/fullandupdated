@@ -3,7 +3,7 @@ resource "aws_db_subnet_group" "this" {
   subnet_ids = var.privates_subnets
 
   tags = merge(var.common_tags, {
-    Name = "${var.rds_config.name}-subnet-group",
+    Name        = "${var.rds_config.name}-subnet-group",
     Environment = var.environment
   })
 }
@@ -16,7 +16,7 @@ resource "aws_db_instance" "this" {
   password               = var.db_password
   allocated_storage      = var.rds_config.storage
   db_subnet_group_name   = aws_db_subnet_group.this.name
-  vpc_security_group_ids = []  # You can attach a security group here if needed
+  vpc_security_group_ids = []  # Optionally attach security groups
   skip_final_snapshot    = true
 
   tags = merge(var.common_tags, {
