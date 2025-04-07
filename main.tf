@@ -1,3 +1,9 @@
+module "sg" {
+  source          = "./modules/sg"
+  security_groups = var.security_groups
+  vpc_id          = var.vpc_id
+}
+
 module "private_ec2" {
   source          = "./modules/ec2"
   instances       = var.private_servers
@@ -33,7 +39,7 @@ module "crm_lb" {
   lb         = var.application_servers.crm.lb
   subnet_ids = var.private_subnets
   vpc_id     = var.vpc_id
-  sg_id      = "sg-crm-lb"  # Adjust as needed or pass as a variable
+  sg_id      = module.sg.sg_ids["CRM-LB"]  # Assuming a security group defined with key "CRM-LB" exists in your security_groups variable.
 }
 
 module "rds" {
@@ -56,6 +62,6 @@ module "backup" {
   source         = "./modules/backup"
   count          = var.env == "PROD" ? 1 : 0
   backup_policy  = var.backup_policy
-  # For example, pass a list of resource ARNs (this can be computed from outputs)
+  # Supply the list of resource ARNs to backup; for example, you can aggregate outputs from the EC2 modules.
   resource_arns  = [] 
 }
