@@ -146,7 +146,6 @@ application_servers = {
   }
 }
 
-# For the new RDS module variables.
 rds_config = {
   name           = "${env}-${orgname}-MYSQL-API"
   instance_class = "db.m5.large"
@@ -177,9 +176,73 @@ backup_policy = {
   resource_tag_filter = "PROD-${orgname}"
 }
 
-# Common tags for resources.
 common_tags = {
   Environment = var.env
   Org         = var.orgname
   Owner       = "InfraTeam"
+}
+
+# Security groups for module "sg"
+security_groups = {
+  METRICS = {
+    name        = "${env}-${orgname}-METRICS-SG"
+    description = "Security group for METRICS server"
+    ingress = [
+      {
+        from_port   = 80,
+        to_port     = 80,
+        protocol    = "tcp",
+        cidr_blocks = ["0.0.0.0/0"]
+      }
+    ]
+    egress = [
+      {
+        from_port   = 0,
+        to_port     = 0,
+        protocol    = "-1",
+        cidr_blocks = ["0.0.0.0/0"]
+      }
+    ]
+  },
+  EMS = {
+    name        = "${env}-${orgname}-EMS-SG"
+    description = "Security group for EMS server"
+    ingress = [
+      {
+        from_port   = 0,
+        to_port     = 0,
+        protocol    = "tcp",
+        cidr_blocks = ["10.0.0.0/16"]
+      }
+    ]
+    egress = [
+      {
+        from_port   = 0,
+        to_port     = 0,
+        protocol    = "-1",
+        cidr_blocks = ["0.0.0.0/0"]
+      }
+    ]
+  },
+  "CRM-LB" = {
+    name        = "${env}-${orgname}-CRM-LB-SG"
+    description = "Security group for CRM load balancer"
+    ingress = [
+      {
+        from_port   = 80,
+        to_port     = 80,
+        protocol    = "tcp",
+        cidr_blocks = ["10.0.0.0/16"]
+      }
+    ]
+    egress = [
+      {
+        from_port   = 0,
+        to_port     = 0,
+        protocol    = "-1",
+        cidr_blocks = ["0.0.0.0/0"]
+      }
+    ]
+  }
+  # Add additional security groups as needed…
 }
