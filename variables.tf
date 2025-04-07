@@ -80,17 +80,25 @@ variable "application_servers" {
   }))
 }
 
-variable "rds_server" {
-  description = "RDS configuration"
+# New variables for RDS module
+variable "rds_config" {
+  description = "RDS configuration details"
   type = object({
     name           = string
     instance_class = string
     engine         = string
-    username       = string
-    password       = string
     storage        = number
-    subnets        = list(string)
   })
+}
+
+variable "db_username" {
+  description = "Database username for RDS"
+  type        = string
+}
+
+variable "db_password" {
+  description = "Database password for RDS"
+  type        = string
 }
 
 variable "ssm_parameters" {
@@ -109,4 +117,11 @@ variable "backup_policy" {
     retention_days      = number
     resource_tag_filter = string
   })
+}
+
+# Common tags that can be applied to resources
+variable "common_tags" {
+  description = "Map of common tags"
+  type        = map(string)
+  default     = {}
 }
