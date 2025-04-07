@@ -23,7 +23,9 @@ module "efs" {
   name            = var.efs.name
   mount_targets   = var.efs.mount_targets
   private_subnets = var.private_subnets
-  sg_id           = "sg-efs"  # Adjust or source dynamically as needed
+  environment     = var.env
+  vpc_id          = var.vpc_id
+  common_tags     = var.common_tags
 }
 
 module "crm_lb" {
@@ -31,14 +33,17 @@ module "crm_lb" {
   lb         = var.application_servers.crm.lb
   subnet_ids = var.private_subnets
   vpc_id     = var.vpc_id
-  sg_id      = "sg-crm-lb"  # Adjust or source dynamically
+  sg_id      = "sg-crm-lb"  # Adjust as needed or pass as a variable
 }
 
 module "rds" {
-  source  = "./modules/rds"
-  rds     = var.rds_server
-  vpc_id  = var.vpc_id
-  sg_id   = "sg-mysql-api"  # Adjust as needed
+  source           = "./modules/rds"
+  rds_config       = var.rds_config
+  privates_subnets = var.private_subnets
+  environment      = var.env
+  db_username      = var.db_username
+  db_password      = var.db_password
+  common_tags      = var.common_tags
 }
 
 module "ssm" {
@@ -46,11 +51,11 @@ module "ssm" {
   ssm_parameters = var.ssm_parameters
 }
 
-# Backup module is only applicable for production.
+# Backup module is created only for production.
 module "backup" {
   source         = "./modules/backup"
   count          = var.env == "PROD" ? 1 : 0
   backup_policy  = var.backup_policy
-  # Supply resource ARNs (e.g., from EC2, RDS, etc.). For demo, this is left empty.
-  resource_arns  = []
+  # For example, pass a list of resource ARNs (this can be computed from outputs)
+  resource_arns  = [] 
 }
