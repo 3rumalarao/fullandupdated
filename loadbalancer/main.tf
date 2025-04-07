@@ -1,6 +1,6 @@
 resource "aws_lb" "this" {
   name               = var.lb.name
-  internal           = var.lb.scheme == "internal" ? true : false
+  internal           = var.lb.scheme == "internal"
   load_balancer_type = var.lb.type
   security_groups    = [var.sg_id]
   subnets            = var.subnet_ids
