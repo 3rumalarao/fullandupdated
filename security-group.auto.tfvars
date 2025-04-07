@@ -39,5 +39,5 @@ security_groups = {
       }
     ]
   }
-  // Add additional security groups for MERGER, CSMERGE, MYSQL, POSTGRESQL, CRM, CLOVER, LDAPHAPROXY, REGCOM, ERCOT, etc.
+  // Add additional SG definitions for MERGER, CSMERGE, MYSQL, POSTGRESQL, CRM, CLOVER, LDAPHAPROXY, REGCOM, ERCOT, etc.
 }
