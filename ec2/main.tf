@@ -12,10 +12,9 @@ resource "aws_instance" "this" {
   }
 }
 
-# Allocate an EIP for public instances
+# Allocate an EIP for public instances (vpc argument removed since it is deprecated)
 resource "aws_eip" "this" {
   for_each = var.is_public ? var.instances : {}
 
   instance = aws_instance.this[each.key].id
-  vpc      = true
 }
