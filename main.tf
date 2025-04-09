@@ -24,14 +24,15 @@ module "public_ec2" {
   orgname         = var.orgname
 }
 
-module "efs" {
-  source          = "./modules/efs"
-  name            = var.efs.name
-  mount_targets   = var.efs.mount_targets
+# Application servers (example: CRM). You can reuse the EC2 module.
+module "crm_ec2" {
+  source          = "./modules/ec2"
+  instances       = var.application_servers.crm.instances
   private_subnets = var.private_subnets
-  environment     = var.env
-  vpc_id          = var.vpc_id
-  common_tags     = var.common_tags
+  public_subnets  = var.public_subnets  # Usually application servers are in private subnets.
+  is_public       = false
+  env             = var.env
+  orgname         = var.orgname
 }
 
 module "crm_lb" {
@@ -39,7 +40,7 @@ module "crm_lb" {
   lb         = var.application_servers.crm.lb
   subnet_ids = var.private_subnets
   vpc_id     = var.vpc_id
-  sg_id      = module.sg.sg_ids["CRM-LB"]  # Assuming a security group defined with key "CRM-LB" exists in your security_groups variable.
+  sg_id      = module.sg.sg_ids["crm-lb"]  # Ensure that your security group definitions include a key "crm-lb"
 }
 
 module "rds" {
@@ -50,6 +51,17 @@ module "rds" {
   db_username      = var.db_username
   db_password      = var.db_password
   common_tags      = var.common_tags
+  rds_sg           = var.rds_sg
+}
+
+module "efs" {
+  source          = "./modules/efs"
+  name            = var.efs.name
+  mount_targets   = var.efs.mount_targets
+  private_subnets = var.private_subnets
+  environment     = var.env
+  vpc_id          = var.vpc_id
+  common_tags     = var.common_tags
 }
 
 module "ssm" {
@@ -57,11 +69,9 @@ module "ssm" {
   ssm_parameters = var.ssm_parameters
 }
 
-# Backup module is created only for production.
 module "backup" {
   source         = "./modules/backup"
-  count          = var.env == "PROD" ? 1 : 0
+  count          = var.env == "prod" ? 1 : 0
   backup_policy  = var.backup_policy
-  # Supply the list of resource ARNs to backup; for example, you can aggregate outputs from the EC2 modules.
-  resource_arns  = [] 
+  resource_arns  = []  # Populate with ARNs of resources to backup (e.g., using outputs from EC2, RDS, etc.)
 }
