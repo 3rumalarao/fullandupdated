@@ -31,7 +31,7 @@ output "ssm_parameters" {
 }
 
 output "backup_plan_id" {
-  value = module.backup.backup_plan_id
+  value = length(module.backup) > 0 ? module.backup[0].backup_plan_id : ""
 }
 
 output "sg_ids" {
