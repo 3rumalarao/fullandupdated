@@ -1,10 +1,11 @@
 variable "instances" {
   description = "Map of instance configurations"
   type = map(object({
-    ami           = string
-    instance_type = string
-    subnet_index  = number
-    key_name      = string
+    ami             = string
+    instance_type   = string
+    subnet_index    = number
+    key_name        = string
+    security_groups = list(string)
   }))
 }
 
@@ -19,7 +20,7 @@ variable "public_subnets" {
 }
 
 variable "is_public" {
-  description = "Flag to indicate if instances are public (EIP will be allocated)"
+  description = "Flag indicating if instances are public"
   type        = bool
   default     = false
 }
