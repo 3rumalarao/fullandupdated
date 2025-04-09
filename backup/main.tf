@@ -2,7 +2,7 @@ resource "aws_backup_vault" "this" {
   name = "prod-backup-vault"
 
   tags = {
-    Environment = "PROD"
+    environment = "prod"
   }
 }
 
@@ -12,7 +12,7 @@ resource "aws_backup_plan" "this" {
   rule {
     rule_name         = "daily-backup"
     target_vault_name = aws_backup_vault.this.name
-    schedule          = "cron(0 5 * * ? *)" # Daily at 5AM UTC
+    schedule          = "cron(0 5 * * ? *)"  # Daily at 5AM UTC
     lifecycle {
       cold_storage_after = 30
       delete_after       = var.backup_policy.retention_days
