@@ -5,7 +5,7 @@ variable "aws_region" {
 }
 
 variable "env" {
-  description = "Environment tag (e.g. DEV, PROD)"
+  description = "Environment tag (e.g. dev, prod)"
   type        = string
 }
 
@@ -32,21 +32,23 @@ variable "public_subnets" {
 variable "private_servers" {
   description = "Map of private server definitions"
   type = map(object({
-    ami           = string
-    instance_type = string
-    subnet_index  = number
-    key_name      = string
+    ami             = string
+    instance_type   = string
+    subnet_index    = number
+    key_name        = string
+    security_groups = list(string)  # Security groups to attach to the instance.
   }))
 }
 
 variable "public_servers" {
   description = "Map of public server definitions"
   type = map(object({
-    ami           = string
-    instance_type = string
-    subnet_index  = number
-    key_name      = string
-    allocate_eip  = bool
+    ami             = string
+    instance_type   = string
+    subnet_index    = number
+    key_name        = string
+    allocate_eip    = bool
+    security_groups = list(string)
   }))
 }
 
@@ -65,22 +67,24 @@ variable "application_servers" {
   description = "Map of application server configurations"
   type = map(object({
     instances = map(object({
-      ami           = string
-      instance_type = string
-      subnet_index  = number
-      key_name      = string
-      az            = string
+      ami             = string
+      instance_type   = string
+      subnet_index    = number
+      key_name        = string
+      az              = string
+      security_groups = list(string)
     }))
     lb = object({
-      name          = string
-      type          = string
-      scheme        = string
-      listener_port = number
+      name             = string
+      type             = string
+      scheme           = string
+      listener_port    = number
+      security_groups  = list(string)   # LB-specific SGs.
     })
   }))
 }
 
-# New variables for RDS module
+# RDS details
 variable "rds_config" {
   description = "RDS configuration details"
   type = object({
@@ -101,12 +105,18 @@ variable "db_password" {
   type        = string
 }
 
+# RDS security group (this is created via the SG module).
+variable "rds_sg" {
+  description = "Security group ID for the RDS instance"
+  type        = string
+}
+
 variable "ssm_parameters" {
   description = "Map of SSM parameter definitions"
   type = map(object({
     name        = string
     description = string
-    value       = string
+    value       = any
     type        = string
   }))
 }
@@ -119,14 +129,21 @@ variable "backup_policy" {
   })
 }
 
-# Variable for common tags
+# Required common tags for all resources (as mandated by the organization)
 variable "common_tags" {
-  description = "Map of common tags"
+  description = "Map of common tags required by organization"
   type        = map(string)
-  default     = {}
+  default = {
+    OWEnvironment         = "dev"         # Adjust accordingly, e.g. "prod" in production.
+    OWComanyCode          = "sap"
+    OWCostCenter          = "1000"
+    OWResourceName        = "ReplaceName" # This will be overridden per resource.
+    OWBusinessApplication = "php-app"
+    OWRegion              = "us-east-1"
+  }
 }
 
-# New variable for security groups – used by module sg.
+# Security groups for resources. These definitions can be placed in a separate tfvars file if desired.
 variable "security_groups" {
   description = "Map of security group definitions"
   type = map(object({
