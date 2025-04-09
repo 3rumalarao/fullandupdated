@@ -32,3 +32,8 @@ variable "common_tags" {
   description = "Common tags for RDS resources"
   type        = map(string)
 }
+
+variable "rds_sg" {
+  description = "Security group ID for the RDS instance"
+  type        = string
+}
