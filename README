@@ -6,7 +6,7 @@
 ├── outputs.tf
 ├── main.tf
 ├── terraform.tfvars
-├── security-group.auto.tfvars
+├── security-group.auto.tfvars         # Optional file for SG definitions if managed separately
 ├── README.md
 └── modules
     ├── ec2
