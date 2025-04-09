@@ -1,69 +1,77 @@
 aws_region = "us-east-1"
-env        = "DEV"        # Change to "PROD" for production
-orgname    = "SAP"
+env        = "dev"         # Use "prod" in production
+orgname    = "sap"
 vpc_id     = "vpc-12345678"
 
 private_subnets  = ["subnet-aaa111", "subnet-bbb222", "subnet-ccc333"]
 public_subnets   = ["subnet-ddd444", "subnet-eee555", "subnet-fff666"]
 
 private_servers = {
-  METRICS = {
-    ami           = "ami-METRICS"
-    instance_type = "m5.xlarge"
-    subnet_index  = 0
-    key_name      = "private-instance"
+  metrics = {
+    ami             = "ami-metrics"
+    instance_type   = "m5.xlarge"
+    subnet_index    = 0
+    key_name        = "private-instance"
+    security_groups = ["dev-sap-metrics-sg"]
   },
-  EMS = {
-    ami           = "ami-EMS"
-    instance_type = "t3.large"
-    subnet_index  = 1
-    key_name      = "private-instance"
+  ems = {
+    ami             = "ami-ems"
+    instance_type   = "t3.large"
+    subnet_index    = 1
+    key_name        = "private-instance"
+    security_groups = ["dev-sap-ems-sg"]
   },
-  MERGER = {
-    ami           = "ami-45373"
-    instance_type = "t2.large"
-    subnet_index  = 2
-    key_name      = "private-instance"
+  merger = {
+    ami             = "ami-45373"
+    instance_type   = "t2.large"
+    subnet_index    = 2
+    key_name        = "private-instance"
+    security_groups = ["dev-sap-merger-sg"]
   },
-  CSMERGE = {
-    ami           = "ami-CSMERGE"
-    instance_type = "r5.large"
-    subnet_index  = 0
-    key_name      = "private-instance"
+  csmerge = {
+    ami             = "ami-csmerge"
+    instance_type   = "r5.large"
+    subnet_index    = 0
+    key_name        = "private-instance"
+    security_groups = ["dev-sap-csmerge-sg"]
   },
-  MYSQL = {
-    ami           = "ami-MYSQL"
-    instance_type = "r5.4xlarge"
-    subnet_index  = 1
-    key_name      = "private-instance"
+  mysql = {
+    ami             = "ami-mysql"
+    instance_type   = "r5.4xlarge"
+    subnet_index    = 1
+    key_name        = "private-instance"
+    security_groups = ["dev-sap-mysql-sg"]
   },
-  POSTGRESQL = {
-    ami           = "ami-POSTGRES"
-    instance_type = "r5.4xlarge"
-    subnet_index  = 2
-    key_name      = "private-instance"
+  postgresql = {
+    ami             = "ami-postgres"
+    instance_type   = "r5.4xlarge"
+    subnet_index    = 2
+    key_name        = "private-instance"
+    security_groups = ["dev-sap-postgresql-sg"]
   }
 }
 
 public_servers = {
-  REGCOM = {
-    ami           = "ami-REGCOM"
-    instance_type = "m5.xlarge"
-    subnet_index  = 0
-    key_name      = "private-instance"
-    allocate_eip  = true
+  regcom = {
+    ami             = "ami-regcom"
+    instance_type   = "m5.xlarge"
+    subnet_index    = 0
+    key_name        = "private-instance"
+    allocate_eip    = true
+    security_groups = ["dev-sap-regcom-sg"]
   },
-  ERCOT = {
-    ami           = "ami-ERCOT"
-    instance_type = "m5.xlarge"
-    subnet_index  = 1
-    key_name      = "private-instance"
-    allocate_eip  = true
+  ercot = {
+    ami             = "ami-ercot"
+    instance_type   = "m5.xlarge"
+    subnet_index    = 1
+    key_name        = "private-instance"
+    allocate_eip    = true
+    security_groups = ["dev-sap-ercot-sg"]
   }
 }
 
 efs = {
-  name          = "${env}-${orgname}-EFS"
+  name          = "dev-sap-efs"
   mount_targets = [
     { az = "us-east-1a", subnet_index = 0 },
     { az = "us-east-1b", subnet_index = 1 },
@@ -74,175 +82,207 @@ efs = {
 application_servers = {
   crm = {
     instances = {
-      CRM1 = {
-        ami           = "ami-565732"
-        instance_type = "m5.xlarge"
-        subnet_index  = 0
-        key_name      = "private-instance"
-        az            = "us-east-1a"
+      crm1 = {
+        ami             = "ami-565732"
+        instance_type   = "m5.xlarge"
+        subnet_index    = 0
+        key_name        = "private-instance"
+        az              = "us-east-1a"
+        security_groups = ["dev-sap-crm-sg"]
       },
-      CRM2 = {
-        ami           = "ami-565732"
-        instance_type = "m5.xlarge"
-        subnet_index  = 1
-        key_name      = "private-instance"
-        az            = "us-east-1b"
+      crm2 = {
+        ami             = "ami-565732"
+        instance_type   = "m5.xlarge"
+        subnet_index    = 1
+        key_name        = "private-instance"
+        az              = "us-east-1b"
+        security_groups = ["dev-sap-crm-sg"]
       }
     }
     lb = {
-      name          = "${env}-${orgname}-CRM-LB"
-      type          = "application"
-      scheme        = "internal"
-      listener_port = 80
+      name            = "dev-sap-crm-lb"
+      type            = "application"
+      scheme          = "internal"
+      listener_port   = 80
+      security_groups = ["dev-sap-crm-lb-sg"]
     }
   },
   clover = {
     instances = {
-      CLOVER1 = {
-        ami           = "ami-CLOVER"
-        instance_type = "t3.xlarge"
-        subnet_index  = 0
-        key_name      = "private-instance"
-        az            = "us-east-1a"
+      clover1 = {
+        ami             = "ami-clover"
+        instance_type   = "t3.xlarge"
+        subnet_index    = 0
+        key_name        = "private-instance"
+        az              = "us-east-1a"
+        security_groups = ["dev-sap-clover-sg"]
       },
-      CLOVER2 = {
-        ami           = "ami-CLOVER"
-        instance_type = "t3.xlarge"
-        subnet_index  = 1
-        key_name      = "private-instance"
-        az            = "us-east-1b"
+      clover2 = {
+        ami             = "ami-clover"
+        instance_type   = "t3.xlarge"
+        subnet_index    = 1
+        key_name        = "private-instance"
+        az              = "us-east-1b"
+        security_groups = ["dev-sap-clover-sg"]
       }
     }
     lb = {
-      name          = "${env}-${orgname}-CLOVER-LB"
-      type          = "application"
-      scheme        = "internal"
-      listener_port = 8080
+      name            = "dev-sap-clover-lb"
+      type            = "application"
+      scheme          = "internal"
+      listener_port   = 8080
+      security_groups = ["dev-sap-clover-lb-sg"]
     }
   },
   ldaphaproxy = {
     instances = {
-      LDAPHAPROXY1 = {
-        ami           = "ami-LDAPHAPROXY"
-        instance_type = "m5.xlarge"
-        subnet_index  = 0
-        key_name      = "private-instance"
-        az            = "us-east-1a"
+      ldaphaproxy1 = {
+        ami             = "ami-ldaphaproxy"
+        instance_type   = "m5.xlarge"
+        subnet_index    = 0
+        key_name        = "private-instance"
+        az              = "us-east-1a"
+        security_groups = ["dev-sap-ldaphaproxy-sg"]
       },
-      LDAPHAPROXY2 = {
-        ami           = "ami-LDAPHAPROXY"
-        instance_type = "t3.xlarge"
-        subnet_index  = 1
-        key_name      = "private-instance"
-        az            = "us-east-1b"
+      ldaphaproxy2 = {
+        ami             = "ami-ldaphaproxy"
+        instance_type   = "t3.xlarge"
+        subnet_index    = 1
+        key_name        = "private-instance"
+        az              = "us-east-1b"
+        security_groups = ["dev-sap-ldaphaproxy-sg"]
       }
     }
     lb = {
-      name          = "${env}-${orgname}-LDAPHAPROXY-NLB"
-      type          = "network"
-      scheme        = "internal"
-      listener_port = 389
+      name            = "dev-sap-ldaphaproxy-nlb"
+      type            = "network"
+      scheme          = "internal"
+      listener_port   = 389
+      security_groups = ["dev-sap-ldaphaproxy-lb-sg"]
     }
   }
 }
 
 rds_config = {
-  name           = "${env}-${orgname}-MYSQL-API"
+  name           = "mysql-api"    # NOTE: This value will be used with a prefix (e.g., "db-") to create a valid identifier.
   instance_class = "db.m5.large"
   engine         = "mysql"
   storage        = 500
 }
 
 db_username = "dbuser"
-db_password = "ChangeMe123"
+db_password = "changeme123"
 
 ssm_parameters = {
   app_env = {
-    name        = "/${env}/${orgname}/app_env"
-    description = "Application settings for ${env} environment"
-    value       = jsonencode({
-      MYSQL_IP         = "replace_with_mysql_ip",
-      POSTGRES_IP      = "replace_with_postgres_ip",
-      CRM_LB_DNS       = "replace_with_crm_lb_dns",
-      CLOVER_LB_DNS    = "replace_with_clover_lb_dns",
+    name        = "/dev/sap/app_env"
+    description = "Application settings for DEV environment"
+    value = {
+      MYSQL_IP         = "replace_with_mysql_ip"
+      POSTGRES_IP      = "replace_with_postgres_ip"
+      CRM_LB_DNS       = "replace_with_crm_lb_dns"
+      CLOVER_LB_DNS    = "replace_with_clover_lb_dns"
       LDAPHAPROXY_NLB  = "replace_with_ldaphaproxy_nlb_dns"
-    })
-    type        = "SecureString"
+    }
+    type = "SecureString"
   }
 }
 
 backup_policy = {
   retention_days      = 7
-  resource_tag_filter = "PROD-${orgname}"
+  resource_tag_filter = "prod-sap"  # In prod, tag value should match required tagging strategy.
 }
 
 common_tags = {
-  Environment = var.env
-  Org         = var.orgname
-  Owner       = "InfraTeam"
+  OWEnvironment         = "dev"
+  OWComanyCode          = "sap"
+  OWCostCenter          = "1000"
+  OWResourceName        = "replace_name"   # This can be overridden per resource as needed.
+  OWBusinessApplication = "php-app"
+  OWRegion              = "us-east-1"
 }
 
-# Security groups for module "sg"
+# Security groups definitions; you can also place these in security-group.auto.tfvars if preferred.
 security_groups = {
-  METRICS = {
-    name        = "${env}-${orgname}-METRICS-SG"
-    description = "Security group for METRICS server"
+  metrics = {
+    name        = "dev-sap-metrics-sg"
+    description = "Security group for metrics server"
     ingress = [
       {
-        from_port   = 80,
-        to_port     = 80,
-        protocol    = "tcp",
+        from_port   = 80
+        to_port     = 80
+        protocol    = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
       }
     ]
     egress = [
       {
-        from_port   = 0,
-        to_port     = 0,
-        protocol    = "-1",
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
         cidr_blocks = ["0.0.0.0/0"]
       }
     ]
   },
-  EMS = {
-    name        = "${env}-${orgname}-EMS-SG"
+  ems = {
+    name        = "dev-sap-ems-sg"
     description = "Security group for EMS server"
     ingress = [
       {
-        from_port   = 0,
-        to_port     = 0,
-        protocol    = "tcp",
+        from_port   = 0
+        to_port     = 0
+        protocol    = "tcp"
         cidr_blocks = ["10.0.0.0/16"]
       }
     ]
     egress = [
       {
-        from_port   = 0,
-        to_port     = 0,
-        protocol    = "-1",
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
         cidr_blocks = ["0.0.0.0/0"]
       }
     ]
   },
-  "CRM-LB" = {
-    name        = "${env}-${orgname}-CRM-LB-SG"
+  "crm-lb" = {
+    name        = "dev-sap-crm-lb-sg"
     description = "Security group for CRM load balancer"
     ingress = [
       {
-        from_port   = 80,
-        to_port     = 80,
-        protocol    = "tcp",
+        from_port   = 80
+        to_port     = 80
+        protocol    = "tcp"
         cidr_blocks = ["10.0.0.0/16"]
       }
     ]
     egress = [
       {
-        from_port   = 0,
-        to_port     = 0,
-        protocol    = "-1",
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+      }
+    ]
+  },
+  rds = {
+    name        = "dev-sap-rds-sg"
+    description = "Security group for RDS instance"
+    ingress = [
+      {
+        from_port   = 3306
+        to_port     = 3306
+        protocol    = "tcp"
+        cidr_blocks = ["10.0.0.0/16"]
+      }
+    ]
+    egress = [
+      {
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
         cidr_blocks = ["0.0.0.0/0"]
       }
     ]
   }
-  # Add additional security groups as needed…
+  # Additional security groups for other resources as needed...
 }
